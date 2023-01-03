@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Page Title</title>
+
+<body>
+  <script id="module" async="" src="wasm.js"></script>
+  <form>
+<textarea id="input">
+9091
+</textarea>
+    <button id="dis" type="button">
+      Disassemble
+    </button>
+<textarea id="output">
+</textarea>
+  </form>
+  <script>
+    addEventListener("load", (event) => {
+      let dis = document.getElementById('dis');
+      let input = document.getElementById('input');
+      let output = document.getElementById('output');
+      dis.addEventListener("click", () => {
+// read the string out
+        foo("x32", input.value);
+      });
+    });
+    var script = document.querySelector('#module');
+    script.addEventListener('load', function() {
+      window.foo = Module.cwrap('foo', 'number', ['string', 'string']);
+      // foo("x32", "90 91");
+    });
+  </script>
+</body>

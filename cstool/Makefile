@@ -10,8 +10,12 @@ CFLAGS += -I../include -I.
 LDFLAGS += -O3 -Wall -L.. -l$(LIBNAME)
 
 TARGET = cstool
+TARGET_JS = cstool.js
+WASM_HTML = wasm.html
 SOURCES := $(wildcard *.c)
 OBJECTS := $(SOURCES:.c=.o)
+WASM_SOURCES = wasm.c
+WASM_OBJECTS := $(WASM_SOURCES:.c=.o)
 
 LIBCAPSTONE = libcapstone.a
 
@@ -25,7 +29,7 @@ LIBCAPSTONE = capstone.lib
 endif
 endif
 
-all: $(TARGET)
+all: $(TARGET) $(TARGET_JS) $(WASM_HTML)
 
 $(TARGET): ../$(LIBCAPSTONE) $(OBJECTS)
 ifeq ($(V), 0)
@@ -35,9 +39,16 @@ else
 	${CC} $(OBJECTS) $(LDFLAGS) -o $@
 endif
 
+$(TARGET_JS): ../$(LIBCAPSTONE) $(OBJECTS)
+	${CC} $(OBJECTS) $(LDFLAGS) -o $@
+
+$(WASM_HTML): ../$(LIBCAPSTONE) $(OBJECTS)
+	${CC} -sEXPORTED_FUNCTIONS=_foo -sEXPORTED_RUNTIME_METHODS=ccall,cwrap $(WASM_OBJECTS) $(LDFLAGS) -o $@
+
 clean:
 	${RM} -rf *.o $(TARGET)
 	${RM} -f *.d
+	${RM} -f *.wasm *.js *.html
 
 %.o: %.c
 ifeq ($(V), 0)

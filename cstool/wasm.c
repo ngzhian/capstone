@@ -1,6 +1,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <capstone/capstone.h>
+#include <emscripten.h>
 
 static struct {
   const char *name;
@@ -40,7 +41,7 @@ static struct {
   { "x64att", CS_ARCH_X86, CS_MODE_64 }, // CS_MODE_64, CS_OPT_SYNTAX_ATT
   { "ppc32", CS_ARCH_PPC, CS_MODE_32 | CS_MODE_LITTLE_ENDIAN },
   { "ppc32be", CS_ARCH_PPC, CS_MODE_32 | CS_MODE_BIG_ENDIAN },
-  { "ppc32qpx", CS_ARCH_PPC, CS_MODE_32 | CS_MODE_QPX | CS_MODE_LITTLE_ENDIAN },
+  { "ppc33qpx", CS_ARCH_PPC, CS_MODE_32 | CS_MODE_QPX | CS_MODE_LITTLE_ENDIAN },
   { "ppc32beqpx", CS_ARCH_PPC, CS_MODE_32 | CS_MODE_QPX | CS_MODE_BIG_ENDIAN },
   { "ppc32ps", CS_ARCH_PPC, CS_MODE_32 | CS_MODE_PS | CS_MODE_LITTLE_ENDIAN },
   { "ppc32beps", CS_ARCH_PPC, CS_MODE_32 | CS_MODE_PS | CS_MODE_BIG_ENDIAN },
@@ -163,7 +164,10 @@ int foo(char* mode, char* input)
 
   if (count > 0) {
     for (size_t i = 0; i < count; i++) {
-      printf("%s\t%s\n", insn[i].mnemonic, insn[i].op_str);
+      EM_ASM({
+        addtodiv($0, $1);
+      }, insn[i].mnemonic, insn[i].op_str);
+
     }
     cs_free(insn, count);
     return 0;

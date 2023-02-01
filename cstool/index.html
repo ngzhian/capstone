@@ -5,29 +5,52 @@
 <body>
   <script id="module" async="" src="wasm.js"></script>
   <form>
-<textarea id="input">
-9091
-</textarea>
+    <textarea id="input">9091</textarea>
+    <fieldset>
+      <input type="radio" id="arm" name="arch" value="arm">
+      <label for="arm">arm</label>
+      <input type="radio" id="armv8" name="arch" value="armv8">
+      <label for="armv8">armv8</label>
+      <input type="radio" id="arm64" name="arch" value="arm64">
+      <label for="arm64">arm64</label>
+      <input type="radio" id="x32" name="arch" value="x32" checked>
+      <label for="x32">x32</label>
+      <input type="radio" id="x64" name="arch" value="x64">
+      <label for="x64">x64</label>
+    </fieldset>
+    <br/>
     <button id="dis" type="button">
       Disassemble
     </button>
-<textarea id="output">
-</textarea>
+    <button id="clear" type="button">
+      Clear
+    </button>
+    <br/>
+    <textarea id="output" style="width: 500px; height: 500px"></textarea>
   </form>
   <script>
     addEventListener("load", (event) => {
       let dis = document.getElementById('dis');
       let input = document.getElementById('input');
       let output = document.getElementById('output');
+      let clear = document.getElementById('clear');
       dis.addEventListener("click", () => {
-// read the string out
-        foo("x32", input.value);
+        output.value = '';
+        foo(document.querySelector('input[name="arch"]:checked').value, input.value);
+      });
+      clear.addEventListener("click", () => {
       });
     });
+
     var script = document.querySelector('#module');
     script.addEventListener('load', function() {
       window.foo = Module.cwrap('foo', 'number', ['string', 'string']);
       // foo("x32", "90 91");
     });
+
+    function addtodiv(a, b) {
+      let output = document.getElementById('output');
+      output.value += UTF8ToString(a) + " " + UTF8ToString(b) + "\n";
+    }
   </script>
 </body>
